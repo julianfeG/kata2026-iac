@@ -1,4 +1,7 @@
 variable "bucket_name" {
   type    = string
-  default = "mfe-header-prod-bucket"
+}
+
+variable "cloudfront_distribution_arn" {
+  default = ""
 }

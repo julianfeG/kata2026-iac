@@ -1,8 +1,5 @@
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block" {
@@ -20,4 +17,24 @@ resource "aws_s3_bucket_ownership_controls" "ownership" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+}
+
+resource "aws_s3_bucket_policy" "policy" {
+  count  = var.cloudfront_distribution_arn != "" ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "cloudfront.amazonaws.com" }
+      Action    = "s3:GetObject"
+      Resource  = "${aws_s3_bucket.bucket.arn}/*"
+      Condition = {
+        StringEquals = {
+          "AWS:SourceArn" = var.cloudfront_distribution_arn
+        }
+      }
+    }]
+  })
 }

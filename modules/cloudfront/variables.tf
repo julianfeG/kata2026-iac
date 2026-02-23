@@ -13,3 +13,11 @@ variable "bucket_arn" {
 variable "domain_name" {
   type = string
 }
+
+variable "extra_origins" {
+  type = map(object({
+    domain_name = string
+    bucket_arn  = string
+  }))
+  default = {}
+}

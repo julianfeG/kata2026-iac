@@ -36,7 +36,18 @@ module "alb" {
 
 module "s3" {
   source       = "./modules/s3"
-  project_name = var.project_name
+  bucket_name = var.project_name
+  cloudfront_distribution_arn = module.cdn.distribution_arn
+}
+
+module "s3_mfe2" {
+  source      = "./modules/s3"
+  bucket_name = "${var.project_name}-mfe2"
+}
+
+module "s3_mfe3" {
+  source      = "./modules/s3"
+  bucket_name = "${var.project_name}-mfe3"
 }
 
 module "cdn" {
@@ -45,4 +56,15 @@ module "cdn" {
   bucket_id    = module.s3.bucket_id
   bucket_arn   = module.s3.bucket_arn
   domain_name  = module.s3.bucket_domain_name
+
+  extra_origins = {
+    mfe2 = {
+      domain_name = module.s3_mfe2.bucket_domain_name
+      bucket_arn  = module.s3_mfe2.bucket_arn
+    }
+    mfe3 = {
+      domain_name = module.s3_mfe3.bucket_domain_name
+      bucket_arn  = module.s3_mfe3.bucket_arn
+    }
+  }
 }

@@ -7,5 +7,5 @@ variable "region" {
 variable "project_name" {
   description = "Project name prefix"
   type        = string
-  default     = "mfe-default"
+  default     = "mfes-kata"
 }
